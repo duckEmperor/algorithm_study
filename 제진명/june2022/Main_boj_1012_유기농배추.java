@@ -1,4 +1,4 @@
-package 제진명;
+package 제진명.june2022;
 
 import java.io.BufferedReader;
 import java.io.IOException;
