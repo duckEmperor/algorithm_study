@@ -9,7 +9,6 @@ let max = Math.max(...woods);
 
 let left = 0;
 let right = max;
-let ans = 0;
 
 while (left <= right) {
     let mid = Math.floor((left+right)/2);
@@ -20,8 +19,7 @@ while (left <= right) {
             count += woods[i] - mid;
         }
     }
-
-    // console.log(count)
+    
     if (count < M)
         right = mid - 1;
     else if (count >= M) {
