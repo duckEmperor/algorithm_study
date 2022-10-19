@@ -1,9 +1,11 @@
+package 제진명.oct2022;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class Main {
+public class Main_boj_21608_상어초등학교 {
     static int N, ans;
     static int [][] blankDeskCnt, occupyDesk;
     static ArrayList<Integer> [] wanted;
