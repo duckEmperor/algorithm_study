@@ -20,8 +20,8 @@ public class Main_boj_4179_불 {
     }
     static int R, C, ans;
     static int [][] map;
-    static int [][] visited;
-    static Pos human;
+    static boolean [][] visited;
+    static Queue<Pos> human = new LinkedList<>();
     static Queue<Pos> fire = new LinkedList<>();
     static int [][] D = {{0, 1},{0, -1},{1, 0},{-1, 0}};
 
@@ -33,71 +33,74 @@ public class Main_boj_4179_불 {
         C = Integer.parseInt(st.nextToken());
 
         map = new int[R][C];
-        visited = new int[R][C];
+        visited = new boolean[R][C];
 
         for (int i = 0 ; i < R ; i++) {
             String s = br.readLine();
             for (int j = 0 ; j < C ; j++) {
-                visited[i][j] = Integer.MAX_VALUE;
                 char c = s.charAt(j);
                 if (c == 'J') {
-                    human = new Pos(i, j, 0);
+                    human.offer(new Pos(i, j, 0));
+                    visited[i][j] = true;
                 } else if (c == 'F') {
                     fire.offer(new Pos(i, j, 0));
+                    map[i][j] = -1;
                 } else if (c == '#') {
-                    map[i][j] = -2;
-                    continue;
+                    map[i][j] = -1;
+                    visited[i][j] = true;
                 }
-                map[i][j] = -1;
             }
         }
 
-        spreadFire();
-        findRoute(human);
+        ans = findRoute();
 
-        System.out.println(ans==0 ? "IMPOSSIBLE" : ans);
+        System.out.println(ans==Integer.MAX_VALUE ? "IMPOSSIBLE" : ans + 1);
     }
-    static void spreadFire() {
-        while(!fire.isEmpty()) {
-            Pos now = fire.poll();
 
-            map[now.x][now.y] = now.t;
+    static int findRoute() {
+        while(!human.isEmpty()) {
+            int preHumanQueueSize = human.size();
+            int preFireQueueSize = fire.size();
 
-            for (int d = 0 ; d < 4 ; d++) {
-                int nx = now.x + D[d][0];
-                int ny = now.y + D[d][1];
+            for (int i = 0 ; i < preFireQueueSize ; i++) {
+                Pos now = fire.poll();
 
-                if (checkOverflow(nx, ny) || map[nx][ny] != -1) continue;
+                for (int d = 0 ; d < 4 ; d++) {
+                    int nx = now.x + D[d][0];
+                    int ny = now.y + D[d][1];
 
-                fire.offer(new Pos(nx, ny, now.t+1));
+                    if (checkOverflow(nx, ny) || map[nx][ny] == -1) continue;
+
+                    map[nx][ny] = -1;
+                    fire.offer(new Pos(nx, ny, now.t + 1));
+                }
+            }
+
+
+            for (int i = 0 ; i < preHumanQueueSize ; i++) {
+                Pos now = human.poll();
+
+                if (now.x == 0 || now.x == R - 1 || now.y == 0 || now.y == C - 1) {
+                    return now.t;
+                }
+
+                for (int d = 0 ; d < 4 ; d++) {
+                    int nx = now.x + D[d][0];
+                    int ny = now.y + D[d][1];
+
+                    if (checkOverflow(nx, ny) || visited[nx][ny] || map[nx][ny] == -1) continue;
+
+                    visited[nx][ny] = true;
+                    human.offer(new Pos(nx, ny, now.t + 1));
+                }
             }
         }
-    }
-
-    static void findRoute(Pos human) {
-        if (visited[human.x][human.y] <= human.t) {
-            return;
-        } else {
-            visited[human.x][human.y] = human.t;
-        }
-
-        if (human.x == 0 || human.x == R-1 || human.y == 0 || human.y == C-1) {
-            ans = Math.max(ans, human.t + 1);
-            return;
-        }
-
-        for (int d = 0 ; d < 4 ; d++) {
-            int nx = human.x + D[d][0];
-            int ny = human.y + D[d][1];
-
-            if (checkOverflow(nx, ny) || map[nx][ny] <= human.t || map[nx][ny] == -2) continue;
-
-            findRoute(new Pos(nx, ny, human.t + 1));
-        }
+        return Integer.MAX_VALUE;
     }
 
     static boolean checkOverflow(int nx, int ny) {
         if (nx < 0 || ny < 0 || nx >= R || ny >= C) return true;
         return false;
     }
+
 }
