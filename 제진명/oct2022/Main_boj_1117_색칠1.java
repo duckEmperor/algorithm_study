@@ -6,10 +6,8 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main_boj_1117_색칠1 {
-
-    static int W, H, f, c, x1, x2, y1, y2;
+    static int W, H, f, c, x1, y1, x2, y2, _f;
     static int [][] colorPaper;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -23,36 +21,62 @@ public class Main_boj_1117_색칠1 {
         x2 = Integer.parseInt(st.nextToken());
         y2 = Integer.parseInt(st.nextToken());
 
-        colorPaper = new int[H][W];
-
-        for (int i = 0 ; i < H ; i++) {
-            for (int j = 0 ; j < W ; j++){
-                colorPaper[i][j] = 1;
-            }
+        if (isOverflow()) {
+            colorPaper = new int[H][2 * f];
+            _f = f;
+        }
+        else {
+            colorPaper = new int[H][W];
+            _f = W - f;
         }
 
-        // 예제에서는 종이를 왼쪽에서 오른쪽으로 위에서 아래로 접고 있는데
-        // 종이를 오른쪽에서 왼쪽으로 아래에서 위로 접도록 하여 (0, 0) 좌표가 이동하지 않도록 변경
-        f = W - f;
-        x1 = W - (x1 + c);
-        x2 = W - (x2 + c);
+        x1 = _f - x1;
+        x2 = _f - x2;
 
-        // 종이를 가로로 접기
+        fillColorPaper();
+
+        foldRowColorPaper();
+        foldColColorPaper();
+
+        System.out.println(H*W - calculrate());
+    }
+
+    static boolean isOverflow() {
+        return W / 2 < f;
+    }
+
+    static void fillColorPaper() {
         for (int i = 0 ; i < H ; i++) {
-            for (int j = 0 ; j < W-f ; j++) {
-                colorPaper[i][f-j-1] = colorPaper[i][f-j-1] + colorPaper[i][f+j];
-                colorPaper[i][f+j] = 0;
+            for (int j = 0 ; j < W ; j++) {
+                if (isOverflow()) colorPaper[i][2 * f - W + j] = 1;
+                else colorPaper[i][j] = 1;
             }
         }
+    }
 
-        for (int i = H/(c+1) ; i > 0 ; i--) {
-            for (int j = 0 ; j < c ; j++) {
+
+    static void foldRowColorPaper() {
+        for (int i = 0 ; i < colorPaper[0].length - _f ; i++) {
+            for (int j = 0 ; j < H ; j++) {
+                colorPaper[j][_f - i - 1] += colorPaper[j][_f + i];
+                colorPaper[j][_f + i] = 0;
+            }
+        }
+    }
+
+    static void foldColColorPaper() {
+        for (int i = c ; i > 0 ; i--) {
+            int _y = H/(c+1) * i;
+            for (int j = 0 ; j < H/(c+1) ; j++) {
                 for (int k = 0 ; k < W ; k++) {
-                    colorPaper[i*c-j-1][k] += colorPaper[i*c+j][k];
-                    colorPaper[i*c+j][k] = 0;
-                }
+                    colorPaper[_y - j - 1][k] += colorPaper[_y + j][k];
+                    colorPaper[_y + j][k] = 0;
+                 }
             }
         }
+    }
+
+    static int calculrate() {
         int cnt = 0;
         for (int i = x2 ; i < x1 ; i++) {
             for (int j = y1 ; j < y2 ; j++) {
@@ -60,14 +84,6 @@ public class Main_boj_1117_색칠1 {
             }
         }
 
-        System.out.println(H*W - cnt);
-
-
-//        for (int  i = 0 ; i < H ; i++) {
-//            for (int j = 0 ; j < W ; j++) {
-//                System.out.print(colorPaper[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
+        return cnt;
     }
 }
