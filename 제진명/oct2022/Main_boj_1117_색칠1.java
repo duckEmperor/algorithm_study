@@ -6,84 +6,43 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main_boj_1117_색칠1 {
-    static int W, H, f, c, x1, y1, x2, y2, _f;
-    static int [][] colorPaper;
+    static long W, H, f, c, x1, y1, x2, y2;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        W = Integer.parseInt(st.nextToken());
-        H = Integer.parseInt(st.nextToken());
-        f = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
-        x1 = Integer.parseInt(st.nextToken());
-        y1 = Integer.parseInt(st.nextToken());
-        x2 = Integer.parseInt(st.nextToken());
-        y2 = Integer.parseInt(st.nextToken());
+        W = Long.parseLong(st.nextToken());
+        H = Long.parseLong(st.nextToken());
+        f = Long.parseLong(st.nextToken());
+        c = Long.parseLong(st.nextToken());
+        x1 = Long.parseLong(st.nextToken());
+        y1 = Long.parseLong(st.nextToken());
+        x2 = Long.parseLong(st.nextToken());
+        y2 = Long.parseLong(st.nextToken());
 
-        if (isOverflow()) {
-            colorPaper = new int[H][2 * f];
-            _f = f;
+        long overlapWidth = Math.min(f, W - f);
+
+        long paintedOverlapPaperCnt = 0;
+        long paintedNotOverlapPaperCnt = 0;
+
+        // 가로로 접어서 겹치는 부분에 색을 칠하지 않음
+        if (overlapWidth <= x1) {
+            paintedNotOverlapPaperCnt = (x2 - x1)*(y2 - y1);
         }
+        // 가로로 접어서 겹치는 부분과 겹치지 않는 부분 모두 색을 칠함
+        else if (overlapWidth < x2) {
+            paintedOverlapPaperCnt = (overlapWidth - x1)*(y2 - y1);
+            paintedNotOverlapPaperCnt = (x2 - overlapWidth)*(y2 - y1);
+        }
+        // 가로로 접어서 겹치는 부분에만 색을 칠함
         else {
-            colorPaper = new int[H][W];
-            _f = W - f;
+            paintedOverlapPaperCnt = (x2 - x1)*(y2 - y1);
         }
 
-        x1 = _f - x1;
-        x2 = _f - x2;
+        long paintedPaper = (2*paintedOverlapPaperCnt + paintedNotOverlapPaperCnt)*(c+1);
+        long ans = H*W - paintedPaper;
 
-        fillColorPaper();
+        System.out.println(ans);
 
-        foldRowColorPaper();
-        foldColColorPaper();
-
-        System.out.println(H*W - calculrate());
-    }
-
-    static boolean isOverflow() {
-        return W / 2 < f;
-    }
-
-    static void fillColorPaper() {
-        for (int i = 0 ; i < H ; i++) {
-            for (int j = 0 ; j < W ; j++) {
-                if (isOverflow()) colorPaper[i][2 * f - W + j] = 1;
-                else colorPaper[i][j] = 1;
-            }
-        }
-    }
-
-
-    static void foldRowColorPaper() {
-        for (int i = 0 ; i < colorPaper[0].length - _f ; i++) {
-            for (int j = 0 ; j < H ; j++) {
-                colorPaper[j][_f - i - 1] += colorPaper[j][_f + i];
-                colorPaper[j][_f + i] = 0;
-            }
-        }
-    }
-
-    static void foldColColorPaper() {
-        for (int i = c ; i > 0 ; i--) {
-            int _y = H/(c+1) * i;
-            for (int j = 0 ; j < H/(c+1) ; j++) {
-                for (int k = 0 ; k < W ; k++) {
-                    colorPaper[_y - j - 1][k] += colorPaper[_y + j][k];
-                    colorPaper[_y + j][k] = 0;
-                 }
-            }
-        }
-    }
-
-    static int calculrate() {
-        int cnt = 0;
-        for (int i = x2 ; i < x1 ; i++) {
-            for (int j = y1 ; j < y2 ; j++) {
-                cnt += colorPaper[j][i];
-            }
-        }
-
-        return cnt;
     }
 }
