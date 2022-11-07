@@ -83,7 +83,7 @@ public class Main_boj_21609_상어중학교 {
         int rainbowBlockCnt = 0;
 
         for (int i = 0 ; i < N ; i++) {
-            for (int j= 0 ; j < N ; j++) {
+            for (int j = 0 ; j < N ; j++) {
                 if (map[i][j] > 0 && !visited[i][j]) {
                     int temp = 1;
                     int rainbowTemp = 0;
