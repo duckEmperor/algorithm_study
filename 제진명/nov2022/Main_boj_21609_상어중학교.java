@@ -32,16 +32,13 @@ public class Main_boj_21609_상어중학교 {
 
         ans = 0;
         while (amount != 0) {
-            findLargestBlock();
+            if(!findLargestBlock()) break;
             gravity();
             map = rotateMap();
             gravity();
         }
-//        printMap();
-//        printMap();
-//        printMap();
 
-        printMap();
+//        printMap();
 
         System.out.println(ans);
 
@@ -77,7 +74,7 @@ public class Main_boj_21609_상어중학교 {
 
     }
 
-    static void findLargestBlock() {
+    static boolean findLargestBlock() {
         boolean [][] visited = new boolean[N][N];
         Queue<int []> queue = new LinkedList<>();
         int cnt = 0;
@@ -124,16 +121,19 @@ public class Main_boj_21609_상어중학교 {
             }
         }
 
+        if (cnt < 2) return false;
+
         removeBlock(x, y);
         calculate(cnt);
         amount -= cnt;
+
+        return true;
 
     }
 
 
     static void calculate(int cnt) {
         ans += cnt * cnt;
-        System.out.println("cnt " + cnt*cnt);
     }
 
     static void removeBlock(int x, int y) {
