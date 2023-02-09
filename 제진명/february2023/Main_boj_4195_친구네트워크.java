@@ -16,7 +16,7 @@ public class Main_boj_4195_친구네트워크 {
 
         int T = Integer.parseInt(br.readLine());
 
-        for (int t = 0 ; t < T ; t++) {
+        for (int t = 1 ; t <= T ; t++) {
             int F = Integer.parseInt(br.readLine());
             HashMap<String, Integer> map = new HashMap<>();
             parents = new int[200000];
